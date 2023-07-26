@@ -22,13 +22,42 @@ public class PreferredProviderUserProperty extends UserProperty {
     @Nullable
     private String providerId;
 
-    @DataBoundConstructor
+    @Nullable
+    private String providerIdRun;
+
+    @Nullable
+    private String providerIdConsole;
+
+    @Nullable
+    private String providerIdArtifacts;
+
+    @Nullable
+    private String providerIdChanges;
+
+    @Nullable
+    private String providerIdTests;
+
     public PreferredProviderUserProperty(@Nullable String providerId) {
         this.providerId = providerId;
+        this.providerIdRun = providerId;
+        this.providerIdConsole = providerId;
+        this.providerIdArtifacts = providerId;
+        this.providerIdChanges = providerId;
+        this.providerIdTests = providerId;
     }
 
-    public ProviderOption getProvider() {
-        final DisplayURLProvider provider = getConfiguredProvider();
+    @DataBoundConstructor
+    public PreferredProviderUserProperty(@Nullable String providerId, @Nullable String providerIdRun, @Nullable String providerIdConsole, @Nullable String providerIdArtifacts, @Nullable String providerIdChanges, @Nullable String providerIdTests) {
+        this.providerId = providerId;
+        this.providerIdRun = providerIdRun;
+        this.providerIdConsole = providerIdConsole;
+        this.providerIdArtifacts = providerIdArtifacts;
+        this.providerIdChanges = providerIdChanges;
+        this.providerIdTests = providerIdTests;
+    }
+
+    public ProviderOption getProvider(String type) {
+        final DisplayURLProvider provider = getConfiguredProvider(type);
         return provider == null ? ProviderOption.DEFAULT_OPTION
             : new ProviderOption(provider.getClass().getName(), provider.getDisplayName());
     }
@@ -46,9 +75,29 @@ public class PreferredProviderUserProperty extends UserProperty {
         return property;
     }
 
-    public DisplayURLProvider getConfiguredProvider() {
+    private String getProviderClass(String type) {
+        if (type == null) {
+            return providerId;
+        }
+        switch (type) {
+        case "run":
+            return providerIdRun;
+        case "console":
+            return providerIdConsole;
+        case "artifacts":
+            return providerIdArtifacts;
+        case "changes":
+            return providerIdChanges;
+        case "tests":
+            return providerIdTests;
+        default:
+            return providerId;
+        }
+    }
+
+    public DisplayURLProvider getConfiguredProvider(String type) {
         return DisplayURLProvider.all().stream()
-            .filter(input -> input.getClass().getName().equals(providerId))
+            .filter(input -> input.getClass().getName().equals(getProviderClass(type)))
             .findFirst()
             .orElse(null);
     }
@@ -61,8 +110,8 @@ public class PreferredProviderUserProperty extends UserProperty {
             .add(ProviderOption.DEFAULT_OPTION).addAll(options).build();
     }
 
-    public boolean isSelected(String providerId) {
-        return getProvider().getId().equals(providerId);
+    public boolean isSelected(String type, String providerId) {
+        return getProvider(type).getId().equals(providerId);
     }
 
     public static class ProviderOption {

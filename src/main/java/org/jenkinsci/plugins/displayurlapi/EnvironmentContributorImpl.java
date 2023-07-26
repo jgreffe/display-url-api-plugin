@@ -15,11 +15,10 @@ public class EnvironmentContributorImpl extends EnvironmentContributor {
     public void buildEnvironmentFor(@NonNull Run r, @NonNull EnvVars envs, @NonNull TaskListener listener) {
         try (DisplayURLContext ctx = DisplayURLContext.open(false)) { // environment contributor "comes from" core
             ctx.run(r);
-            DisplayURLProvider urlProvider = DisplayURLProvider.get();
-            envs.put("RUN_DISPLAY_URL", urlProvider.getRunURL(r));
-            envs.put("RUN_ARTIFACTS_DISPLAY_URL", urlProvider.getArtifactsURL(r));
-            envs.put("RUN_CHANGES_DISPLAY_URL", urlProvider.getChangesURL(r));
-            envs.put("RUN_TESTS_DISPLAY_URL", urlProvider.getTestsURL(r));
+            envs.put("RUN_DISPLAY_URL", DisplayURLProvider.get("run").getRunURL(r));
+            envs.put("RUN_ARTIFACTS_DISPLAY_URL", DisplayURLProvider.get("artifacts").getArtifactsURL(r));
+            envs.put("RUN_CHANGES_DISPLAY_URL", DisplayURLProvider.get("changes").getChangesURL(r));
+            envs.put("RUN_TESTS_DISPLAY_URL", DisplayURLProvider.get("tests").getTestsURL(r));
         }
     }
 
@@ -27,7 +26,7 @@ public class EnvironmentContributorImpl extends EnvironmentContributor {
     public void buildEnvironmentFor(@NonNull Job j, @NonNull EnvVars envs, @NonNull TaskListener listener) {
         try (DisplayURLContext ctx = DisplayURLContext.open(false)) {
             ctx.job(j);
-            envs.put("JOB_DISPLAY_URL", DisplayURLProvider.get().getJobURL(j));
+            envs.put("JOB_DISPLAY_URL", DisplayURLProvider.get("job").getJobURL(j));
         }
     }
 }

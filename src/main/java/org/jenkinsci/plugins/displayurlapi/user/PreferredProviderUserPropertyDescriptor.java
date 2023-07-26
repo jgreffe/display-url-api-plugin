@@ -19,18 +19,42 @@ public class PreferredProviderUserPropertyDescriptor extends UserPropertyDescrip
         return new PreferredProviderUserProperty(ProviderOption.DEFAULT_OPTION.getId());
     }
 
-    public ListBoxModel doFillProviderIdItems() {
+    private ListBoxModel fillProvidedItems(String type) {
         ListBoxModel items = new ListBoxModel();
         PreferredProviderUserProperty property = PreferredProviderUserProperty.forCurrentUser();
         for (ProviderOption providerOption : property.getAll()) {
             ListBoxModel.Option option = new ListBoxModel.Option(
                     providerOption.getName(),
                     providerOption.getId(),
-                    property.isSelected(providerOption.getId())
+                    property.isSelected(type, providerOption.getId())
             );
             items.add(option);
         }
         return items;
+    }
+
+    public ListBoxModel doFillProviderIdItems() {
+        return fillProvidedItems("job");
+    }
+
+    public ListBoxModel doFillProviderIdRunItems() {
+        return fillProvidedItems("run");
+    }
+
+    public ListBoxModel doFillProviderIdConsoleItems() {
+        return fillProvidedItems("console");
+    }
+
+    public ListBoxModel doFillProviderIdArtifactsItems() {
+        return fillProvidedItems("artifacts");
+    }
+
+    public ListBoxModel doFillProviderIdChangesItems() {
+        return fillProvidedItems("changes");
+    }
+
+    public ListBoxModel doFillProviderIdTestsItems() {
+        return fillProvidedItems("tests");
     }
 
     @Override

@@ -44,6 +44,7 @@ public abstract class AbstractDisplayAction implements Action {
 
     DisplayURLProvider lookupProvider(StaplerRequest req) {
         final String providerName = req.getParameter("provider");
+        final String page = StringUtils.defaultString(req.getParameter("page"), "");
         if (StringUtils.isNotEmpty(providerName)) {
             ExtensionList<DisplayURLProvider> providers = DisplayURLProvider.all();
             DisplayURLProvider provider = providers.stream()
@@ -57,23 +58,27 @@ public abstract class AbstractDisplayAction implements Action {
             }
         }
 
-        return lookupProvider();
+        return lookupProvider(page);
     }
 
     DisplayURLProvider lookupProvider() {
+        return lookupProvider("job");
+    }
+
+    DisplayURLProvider lookupProvider(String type) {
         PreferredProviderUserProperty prefProperty = getUserPreferredProviderProperty();
 
-        if (prefProperty != null && prefProperty.getConfiguredProvider() != null) {
-            return prefProperty.getConfiguredProvider();
+        if (prefProperty != null && prefProperty.getConfiguredProvider(type) != null) {
+            return prefProperty.getConfiguredProvider(type);
         }
-        DisplayURLProvider displayURLProvider = DisplayURLProvider.getPreferredProvider();
+        DisplayURLProvider displayURLProvider = DisplayURLProvider.getPreferredProvider(type);
         if (displayURLProvider == null) {
             ExtensionList<DisplayURLProvider> all = DisplayURLProvider.all();
             displayURLProvider = all.stream()
                 .filter(
                     ((Predicate<DisplayURLProvider>) ClassicDisplayURLProvider.class::isInstance)
                         .negate())
-                .findFirst().orElse(DisplayURLProvider.getDefault());
+                .findFirst().orElse(DisplayURLProvider.getDefault(type));
         }
         return displayURLProvider;
     }

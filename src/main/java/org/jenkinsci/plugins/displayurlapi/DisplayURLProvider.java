@@ -22,13 +22,18 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
  */
 public abstract class DisplayURLProvider implements ExtensionPoint {
 
+    // FIXME to remove, kept only for tests compatibility
+    public static DisplayURLProvider get() {
+        return get("job");
+    }
+
     /**
      * Returns the {@link DisplayURLProvider} to use for generating links to be given to users.
      *
      * @return DisplayURLProvider
      */
-    public static DisplayURLProvider get() {
-        DisplayURLProvider preferredProvider = getPreferredProvider();
+    public static DisplayURLProvider get(String type) {
+        DisplayURLProvider preferredProvider = getPreferredProvider(type);
         return preferredProvider != null ? preferredProvider : DisplayURLProviderImpl.INSTANCE;
     }
 
@@ -41,8 +46,13 @@ public abstract class DisplayURLProvider implements ExtensionPoint {
         return ExtensionList.lookup(DisplayURLProvider.class);
     }
 
+    // FIXME to remove, ketp only for unit tests compatibility
     public static DisplayURLProvider getDefault() {
-        DisplayURLProvider defaultProvider = getPreferredProvider();
+        return getDefault("job");
+    }
+
+    public static DisplayURLProvider getDefault(String type) {
+        DisplayURLProvider defaultProvider = getPreferredProvider(type);
         if (defaultProvider == null) {
             defaultProvider = ExtensionList.lookup(DisplayURLProvider.class)
                 .get(ClassicDisplayURLProvider.class);
@@ -76,6 +86,14 @@ public abstract class DisplayURLProvider implements ExtensionPoint {
     @NonNull
     public String getName() {
         return this.getClass().getSimpleName();
+    }
+
+    /**
+     * Fully qualified URL for a Run console
+     */
+    @NonNull
+    public String getConsoleURL(Run<?, ?> run) {
+        return getRunURL(run);
     }
 
     /**
@@ -143,6 +161,12 @@ public abstract class DisplayURLProvider implements ExtensionPoint {
             }
         }
 
+        @NonNull
+        @Override
+        public String getConsoleURL(Run<?, ?> run) {
+            return getPageURL(run, "console");
+        }
+
         @Override
         @NonNull
         public String getArtifactsURL(Run<?, ?> run) {
@@ -183,11 +207,11 @@ public abstract class DisplayURLProvider implements ExtensionPoint {
     }
 
     @Nullable
-    public static DisplayURLProvider getPreferredProvider() {
+    public static DisplayURLProvider getPreferredProvider(String type) {
         PreferredProviderUserProperty prefProperty = getUserPreferredProviderProperty();
 
-        if (prefProperty != null && prefProperty.getConfiguredProvider() != null) {
-            return prefProperty.getConfiguredProvider();
+        if (prefProperty != null && prefProperty.getConfiguredProvider(type) != null) {
+            return prefProperty.getConfiguredProvider(type);
         }
         String clazz = findClass();
         if (isNotEmpty(clazz)) {
