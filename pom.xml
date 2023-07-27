@@ -15,7 +15,7 @@
 
   <properties>
     <revision>2.3.8</revision>
-    <changelist>-99999</changelist>
+    <changelist>-99998</changelist>
     <jenkins.version>2.416-99990</jenkins.version>
     <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
   </properties>

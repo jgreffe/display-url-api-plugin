@@ -161,12 +161,6 @@ public abstract class DisplayURLProvider implements ExtensionPoint {
             }
         }
 
-        @NonNull
-        @Override
-        public String getConsoleURL(Run<?, ?> run) {
-            return getPageURL(run, "console");
-        }
-
         @Override
         @NonNull
         public String getArtifactsURL(Run<?, ?> run) {
