@@ -8,6 +8,6 @@ import hudson.model.Run;
 public class DisplayURLConsoleProvider extends ConsoleURLProvider {
     @Override
     public String getConsoleURL(Run<?, ?> run) {
-        return DisplayURLProvider.get("run").getConsoleURL(run);
+        return DisplayURLProvider.get("console").getConsoleURL(run);
     }
 }
